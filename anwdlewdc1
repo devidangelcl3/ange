@@ -6662,8 +6662,9 @@ end)
 
  M:Seperator("Dual Curse Katana")
 
-M:Toggle("Quest Dual Curse Katana ( Beta )",_G.AutoCdk,function(value)
+M:Toggle("Auto Dual Curse Katana",_G.AutoCdk,function(value)
  _G.AutoCdk = value
+ _G.click = value
 end)
 
 spawn(function()
@@ -7115,41 +7116,43 @@ spawn(function()
 			end
 		end
 	end)
+
 	
 	M:Seperator("Misc Tushita")
 
-   M:Toggle("Auto Holy Torch ( Beta )",_G.AutoHolyTorch,function(value)
+   M:Toggle("Auto Holy Torch",_G.AutoHolyTorch,function(value)
         _G.AutoHolyTorch = value
         StopTween(_G.AutoHolyTorch)
     end)
     
-    spawn(function()
-        while wait() do
-            if _G.AutoHolyTorch then
-                pcall(function()
-                    wait(1)
-                    TP1(CFrame.new(-10752, 417, -9366))
-                    wait(1)
-                    TP1(CFrame.new(-11672, 334, -9474))
-                    wait(1)
-                    TP1(CFrame.new(-12132, 521, -10655))
-                    wait(1)
-                    TP1(CFrame.new(-13336, 486, -6985))
-                    wait(1)
-                    TP1(CFrame.new(-13489, 332, -7925))
-                end)
-            end
-        end
-    end)
+	spawn(function()
+		while wait() do
+			if _G.AutoHolyTorch and World3 then
+				pcall(function()
+					wait(1)
+					repeat topos(CFrame.new(-10752, 417, -9366)) wait() until not _G.AutoHolyTorch or (game.Players.LocalPlayer.Character.HumanoidRootPart.Position-Vector3.new(-10752, 417, -9366)).Magnitude <= 10
+					wait(1)
+					repeat topos(CFrame.new(-11672, 334, -9474)) wait() until not _G.AutoHolyTorch or (game.Players.LocalPlayer.Character.HumanoidRootPart.Position-Vector3.new(-11672, 334, -9474)).Magnitude <= 10
+					wait(1)
+					repeat topos(CFrame.new(-12132, 521, -10655)) wait() until not _G.AutoHolyTorch or (game.Players.LocalPlayer.Character.HumanoidRootPart.Position-Vector3.new(-12132, 521, -10655)).Magnitude <= 10
+					wait(1)
+					repeat topos(CFrame.new(-13336, 486, -6985)) wait() until not _G.AutoHolyTorch or (game.Players.LocalPlayer.Character.HumanoidRootPart.Position-Vector3.new(-13336, 486, -6985)).Magnitude <= 10
+					wait(1)
+					repeat topos(CFrame.new(-13489, 332, -7925)) wait() until not _G.AutoHolyTorch or (game.Players.LocalPlayer.Character.HumanoidRootPart.Position-Vector3.new(-13489, 332, -7925)).Magnitude <= 10
+				end)
+			end
+		end
+	end)
 
-M:Toggle("Auto Tushita Boss ( Beta )", _G.Autotushita,function(value)
+
+M:Toggle("Auto Kill Boss Tushita", _G.Autotushita,function(value)
          _G.Autotushita = value
         StopTween( _G.Autotushita)
     end)
 
     spawn(function()
         while wait() do
-            if  _G.Autotushita and World3 then
+            if _G.Autotushita and World3 then
                 pcall(function()
                     if game:GetService("Workspace").Enemies:FindFirstChild("Longma [Lv. 2000] [Boss]") then
                         for i,v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
