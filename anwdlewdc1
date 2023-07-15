@@ -3712,7 +3712,7 @@ spawn(function()
 end)
 
     Main:Button("Instant Chest Bypass ( ON/OFF )",function()
-        loadstring(game:HttpGet("https://apitesthmt.000webhostapp.com/chest"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/devidangelcl3/ange/main/onoff"))()
     end)
 
     
@@ -4319,6 +4319,7 @@ Main:Toggle("Bring Mob",true,function(Mag)
             end)
         end
     end)
+
 
 Main:Toggle("Auto Haki",true,function(value)
 _G.AUTOHAKI = value
@@ -8362,7 +8363,7 @@ end
 
 if World3 then
 
-    RaceV4:Toggle("Auto Summon Mirage Island",_G.dao,function(state)
+    RaceV4:Toggle("Auto Auto Summon Mirage Island",_G.dao,function(state)
     if state then
         _G.dao = true
     else
@@ -8429,7 +8430,7 @@ end
 end) 
 
         RaceV4:Button("Farm Chest Mirage Island",function()
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/Chetdithglon/AN_HUB/main/autochestvip'))()
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/devidangelcl3/ange/main/fastmystic'))()
         end)
 
    RaceV4:Seperator("Mirage & Gear")
@@ -8647,8 +8648,6 @@ end)
   end)
 
   RaceV4:Seperator("Complete Trials")
-
-
 
   RaceV4:Toggle("Auto Complete Trial Fish",false,function(v)
     getgenv().AutoTrialFishV4 = v
