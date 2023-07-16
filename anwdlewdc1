@@ -8366,7 +8366,7 @@ end
 
 if World3 then
 
-    RaceV4:Toggle("Auto Auto Summon Mirage Island",_G.dao,function(state)
+    RaceV4:Toggle("Auto Summon Mirage Island",_G.dao,function(state)
     if state then
         _G.dao = true
     else
