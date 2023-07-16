@@ -9088,6 +9088,10 @@ end)
         end
     end)
     
+    P:Button("Auto Quest Player",function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("PlayerHunter")
+    end)
+
     P:Toggle("Spectate Player",false,function(value)
         SpectatePlys = value
         local plr1 = game:GetService("Players").LocalPlayer.Character.Humanoid
@@ -9098,6 +9102,8 @@ end)
         game:GetService("Workspace").Camera.CameraSubject = game:GetService("Players").LocalPlayer.Character.Humanoid
     end)
     
+
+
     P:Toggle("Teleport",false,function(value)
         _G.TeleportPly = value
         pcall(function()
@@ -9106,12 +9112,6 @@ end)
             end
             StopTween(_G.TeleportPly)
         end)
-    end)
-
-    P:Seperator("Quest Player")
-    
-    P:Button("Auto Quest Player",function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("PlayerHunter")
     end)
 
     
@@ -9133,7 +9133,60 @@ end)
             end)
         end
     end)
+
+    P:Toggle("Aimbot Skill Near",false,function(value)
+        _G.aim = value
+    end)
+
+_G.aim = true
+getgenv().killed = {}
+getgenv().players = game.Players:GetPlayers()
+function getNearestTarget()
+dist = math.huge
+p = nil
+ for i, v in pairs(getgenv().players) do
+ 
+ if v ~= game.Players.LocalPlayer and v.Character and v and p ~= v then 
     
+   
+  if (v.Character.HumanoidRootPart.CFrame.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.Position). Magnitude < dist and unscan ~= v then 
+
+   dist = (v.Character.HumanoidRootPart.CFrame.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.Position). magnitude 
+   p = v
+ end
+ end
+ end
+return p
+end
+spawn(function()
+while _G.aim do
+wait()
+PlayersPosition = getNearestTarget().Character.HumanoidRootPart.CFrame.Position
+Playersaimbot = getNearestTarget().Name
+end
+end)
+
+spawn(function()
+    local gg = getrawmetatable(game)
+    local old = gg.__namecall
+    setreadonly(gg,false)
+    gg.__namecall = newcclosure(function(...)
+        local method = getnamecallmethod()
+        local args = {...}
+        if tostring(method) == "FireServer" then
+            if tostring(args[1]) == "RemoteEvent" then
+                if tostring(args[2]) ~= "true" and tostring(args[2]) ~= "false" then
+                    if Playersaimbot ~= nil then
+                        args[2] = PlayersPosition
+                        return old(unpack(args))
+                    end
+                end
+            end
+        end
+        return old(...)
+    end)
+end)
+
     P:Toggle("Aimbot Gun",false,function(value)
         _G.Aimbot_Gun = value
     end)
@@ -9153,24 +9206,6 @@ end)
                 end)
             end
         end
-    end)
-    
-    P:Toggle("Aimbot Skill",false,function(value)
-        _G.Aimbot_Skill = value
-    end)
-    
-    spawn(function()
-        pcall(function()
-            while task.wait() do
-                if _G.Aimbot_Skill and PlayerSelectAimbot ~= nil and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool") and game.Players.LocalPlayer.Character[game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool").Name]:FindFirstChild("MousePos") then
-                    local args = {
-                        [1] = game:GetService("Players"):FindFirstChild(PlayerSelectAimbot).Character.HumanoidRootPart.Position
-                    }
-                    
-                    game:GetService("Players").LocalPlayer.Character:FindFirstChild(game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool").Name).RemoteEvent:FireServer(unpack(args))
-                end
-            end
-        end)
     end)
 
     T:Seperator("World")
