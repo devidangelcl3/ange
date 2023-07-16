@@ -9050,6 +9050,7 @@ end)
     elseif World3 then
     end
 
+
     local plyserv = P:Label("Players")
 
     
@@ -9086,10 +9087,6 @@ end)
         for i,v in pairs(game:GetService("Players"):GetChildren()) do  
             SelectedPly:Add(v.Name)
         end
-    end)
-    
-    P:Button("Auto Quest Player",function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("PlayerHunter")
     end)
 
     P:Toggle("Spectate Player",false,function(value)
@@ -9134,58 +9131,23 @@ end)
         end
     end)
 
-    P:Toggle("Aimbot Skill Near",false,function(value)
-        _G.aim = value
+    P:Toggle("Aimbot Skill",false,function(value)
+        _G.Aimbot_Skill = value
     end)
-
-_G.aim = true
-getgenv().killed = {}
-getgenv().players = game.Players:GetPlayers()
-function getNearestTarget()
-dist = math.huge
-p = nil
- for i, v in pairs(getgenv().players) do
- 
- if v ~= game.Players.LocalPlayer and v.Character and v and p ~= v then 
     
-   
-  if (v.Character.HumanoidRootPart.CFrame.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.Position). Magnitude < dist and unscan ~= v then 
-
-   dist = (v.Character.HumanoidRootPart.CFrame.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.Position). magnitude 
-   p = v
- end
- end
- end
-return p
-end
-spawn(function()
-while _G.aim do
-wait()
-PlayersPosition = getNearestTarget().Character.HumanoidRootPart.CFrame.Position
-Playersaimbot = getNearestTarget().Name
-end
-end)
-
-spawn(function()
-    local gg = getrawmetatable(game)
-    local old = gg.__namecall
-    setreadonly(gg,false)
-    gg.__namecall = newcclosure(function(...)
-        local method = getnamecallmethod()
-        local args = {...}
-        if tostring(method) == "FireServer" then
-            if tostring(args[1]) == "RemoteEvent" then
-                if tostring(args[2]) ~= "true" and tostring(args[2]) ~= "false" then
-                    if Playersaimbot ~= nil then
-                        args[2] = PlayersPosition
-                        return old(unpack(args))
-                    end
+    spawn(function()
+        pcall(function()
+            while task.wait() do
+                if _G.Aimbot_Skill and PlayerSelectAimbot ~= nil and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool") and game.Players.LocalPlayer.Character[game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool").Name]:FindFirstChild("MousePos") then
+                    local args = {
+                        [1] = game:GetService("Players"):FindFirstChild(PlayerSelectAimbot).Character.HumanoidRootPart.Position
+                    }
+                    
+                    game:GetService("Players").LocalPlayer.Character:FindFirstChild(game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool").Name).RemoteEvent:FireServer(unpack(args))
                 end
             end
-        end
-        return old(...)
+        end)
     end)
-end)
 
     P:Toggle("Aimbot Gun",false,function(value)
         _G.Aimbot_Gun = value
@@ -10459,17 +10421,39 @@ Misc:Seperator("Teams")
 
     Misc:Seperator("Anti Ban")
 
-Misc:Toggle("Anti Cheat Bypass", true, function(value)
-  _G.SafeFarm = value
-CheckAntiCheatBypass()
-  Notification("Anti Cheat Bypass Activated ✅")
-end)
+
+    Misc:Toggle("Anti Cheat Bypass",true,function(vu)
+        spawn(function()
+            while wait() do
+                AntiAutoClick:GetPropertyChangedSignal("Visible"):Connect(function()
+                    if AntiAutoClick.Visible == true then
+                        wait(0.1)
+                        local Color
+                        for i,v in pairs(TextMatch) do
+                            if string.match(AntiAutoClick.TextFrame.ColorIndicator.Text,v) then
+                                Color = v
+                            end
+                        end
+                        for i,v in pairs(AntiAutoClick.Colors:GetChildren()) do
+                            if v.Button.Text == Color:sub(1,1) then
+                                firesignal(v.Button.MouseButton1Click)
+                            end
+                        end
+                    end
+                end) 
+                LocalPlayer.Idled:connect(function()
+                    VirtualUser:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+                    wait(1)
+                    VirtualUser:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+                end)
+            end
+        end)
 
  Misc:Toggle("Anti Scan",true,function(value)
-        _G.AFK = value
+        _G.antiscan = value
         end)
-    
- getgenv().A = require(game:GetService("ReplicatedStorage").CombatFramework.RigLib).wrapAttackAnimationAsync
+_G.antiscan = true
+getgenv().A = require(game:GetService("ReplicatedStorage").CombatFramework.RigLib).wrapAttackAnimationAsync
 getgenv().B = require(game.Players.LocalPlayer.PlayerScripts.CombatFramework.Particle).play
 spawn(function()
     while wait() do
@@ -10491,7 +10475,10 @@ spawn(function()
     end
 end)
 
-Misc:Toggle("Anti AFK", true, function()
+Misc:Toggle("Anti AFK",true,function()
+      _G.antiafk = value
+      end)
+_G.antiafk = true  
 local vu = game:GetService("VirtualUser")
 repeat wait() until game:IsLoaded() 
 	game:GetService("Players").LocalPlayer.Idled:connect(function()
