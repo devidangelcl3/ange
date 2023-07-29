@@ -1,3 +1,4 @@
+-- Test
 repeat wait() until game:IsLoaded()
 and game.Players.LocalPlayer
 and game.Players.LocalPlayer.Character
@@ -3566,8 +3567,6 @@ task.spawn(function()
         end
     end)
 
-
-    
 Main:AddToggle("Auto Kaitan",false,function(value)
        _G.AutoFarm = value
        _G.SelectWeapon = "Combat"
@@ -3584,7 +3583,7 @@ Main:AddToggle("Auto Kaitan",false,function(value)
       StopTween(_G.AutoFarm)
     end)
     
-   Main:AddToggle("Auto Farm Nearest ",_G.AutoFarmNearest,function(value)
+   Main:AddToggle("Auto Farm Nearest",_G.AutoFarmNearest,function(value)
    _G.AutoFarmNearest = value
    StopTween(_G.AutoFarmNearest)
  end)
@@ -4166,18 +4165,12 @@ end)
 
     Main:AddSeperator("Main Setting")
 
- local Bring = {"Normal", "Super"}
 _G.BringMode = "Super"
-Main:AddDropdown("Bring Mob -> Mode", Bring,function(value)
-    _G.BringMode = value
-end)
 spawn(function()
-    while wait(.1) do
+    while wait() do
         if _G.BringMode then
             pcall(function()
-                if _G.BringMode == "Normal" then
-                    _G.BringMode = 200
-                elseif _G.BringMode == "Super" then
+                if _G.BringMode == "Super" then
                     _G.BringMode = 320
                 end
             end)
@@ -4222,7 +4215,7 @@ Main:AddToggle("Bring Mob",true,function(Mag)
     end)
 
 
-Main:AddToggle("Auto Haki",true,function(value)
+Main:AddToggle("Auto Buso",true,function(value)
 _G.AUTOHAKI = value
 end)
 spawn(function()
@@ -4241,37 +4234,176 @@ end)
         _G.FastAttack = value
     end)      
     
+_G.FastAttack = true
+_G.Fast_Delay = 0.5
+
+local CurveFrame = debug.getupvalues(require(game:GetService("Players").LocalPlayer.PlayerScripts:WaitForChild("CombatFramework")))[2]
+local VirtualUser = game:GetService("VirtualUser")
+local RigControllerR = debug.getupvalues(require(game:GetService("Players").LocalPlayer.PlayerScripts.CombatFramework.RigController))[2]
+local Client = game:GetService("Players").LocalPlayer
+local DMG = require(Client.PlayerScripts.CombatFramework.Particle.Damage)
 local CameraShaker = require(game.ReplicatedStorage.Util.CameraShaker)
-CombatFrameworkR = require(game:GetService("Players").LocalPlayer.PlayerScripts.CombatFramework)
-y = debug.getupvalues(CombatFrameworkR)[2]
-spawn(function()
-    game:GetService("RunService").RenderStepped:Connect(function()
-        if _G.FastAttack then
-            if typeof(y) == "table" then
-                pcall(function()
-                    CameraShaker:Stop()
-                    y.activeController.timeToNextAttack = (math.huge^math.huge^math.huge)
-                    y.activeController.timeToNextAttack = 0
-                    y.activeController.hitboxMagnitude = 60
-                    y.activeController.active = false
-                    y.activeController.timeToNextBlock = 0
-                    y.activeController.focusStart = 1655503339.0980349
-                    y.activeController.increment = 1
-                    y.activeController.blocking = false
-                    y.activeController.attacking = false
-                    y.activeController.humanoid.AutoRotate = true
-                end)
+CameraShaker:Stop()
+function CurveFuckWeapon()
+    local p13 = CurveFrame.activeController
+    local wea = p13.blades[1]
+    if not wea then
+        return
+    end
+    while wea.Parent ~= game.Players.LocalPlayer.Character do
+        wea = wea.Parent
+    end
+    return wea
+end
+
+function getHits(Size)
+    local Hits = {}
+    local Enemies = workspace.Enemies:GetChildren()
+    local Characters = workspace.Characters:GetChildren()
+    for i = 1, #Enemies do
+        local v = Enemies[i]
+        local Human = v:FindFirstChildOfClass("Humanoid")
+        if
+            Human and Human.RootPart and Human.Health > 0 and
+                game.Players.LocalPlayer:DistanceFromCharacter(Human.RootPart.Position) < Size + 5
+         then
+            table.insert(Hits, Human.RootPart)
+        end
+    end
+    for i = 1, #Characters do
+        local v = Characters[i]
+        if v ~= game.Players.LocalPlayer.Character then
+            local Human = v:FindFirstChildOfClass("Humanoid")
+            if
+                Human and Human.RootPart and Human.Health > 0 and
+                    game.Players.LocalPlayer:DistanceFromCharacter(Human.RootPart.Position) < Size + 5
+             then
+                table.insert(Hits, Human.RootPart)
             end
         end
+    end
+    return Hits
+end
+
+function Boost()
+    task.spawn(function()
+        game:GetService("ReplicatedStorage").RigControllerEvent:FireServer("weaponChange",tostring(CurveFuckWeapon()))
     end)
-end)
-spawn(function()
-    game:GetService("RunService").RenderStepped:Connect(function()
-        if _G.FastAttack == true then
-            game.Players.LocalPlayer.Character.Stun.Value = 0
-            game.Players.LocalPlayer.Character.Busy.Value = false        
+end
+
+function Unboost()
+    tsak.spawn(function()
+        game:GetService("ReplicatedStorage").RigControllerEvent:FireServer("unequipWeapon",tostring(CurveFuckWeapon()))
+    end)
+end
+
+local cdnormal = 0
+local Animation = Instance.new("Animation")
+local CooldownFastAttack = 0
+
+FastAttack = function()
+    local ac = CurveFrame.activeController
+    if ac and ac.equipped then
+        task.spawn(function()
+            if tick() - cdnormal > 0.5 then
+                ac:attack()
+                cdnormal = tick()
+            else
+                Animation.AnimationId = ac.anims.basic[2]
+                ac.humanoid:LoadAnimation(Animation):Play(1, 1)
+                game:GetService("ReplicatedStorage").RigControllerEvent:FireServer("hit", getHits(120), 2, "")
+            end
+        end)
+    end
+end
+
+bs = tick()
+task.spawn(function()
+    while task.wait(_G.Fast_Delay) do
+        if FastAttack then
+            _G.Fast = true
+            if bs - tick() > 0.75 then
+                task.wait()
+                bs = tick()
+            end
+            pcall(function()
+                for i, v in pairs(game.Workspace.Enemies:GetChildren()) do
+                    if v.Humanoid.Health > 0 then
+                        if (v.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 100 then
+                            FastAttack()
+                            task.wait()
+                            Boost()
+                        end
+                    end
+                end
+            end)
         end
-    end)
+    end
+end)
+
+k = tick()
+task.spawn(function()
+    if _G.Fast then
+    while task.wait(.2) do
+            if k - tick() > 0.75 then
+                task.wait()
+                k = tick()
+            end
+            end
+            pcall(function()
+                for i, v in pairs(game.Workspace.Enemies:GetChildren()) do
+                    if v.Humanoid.Health > 0 then
+                        if (v.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 100 then
+                            task.wait(.000025)
+                            Unboost()
+                        end
+                    end
+                end
+            end)
+    end
+end)
+
+task.spawn(function()
+    while task.wait() do
+        if _G.Fast then
+       pcall(function()
+        CurveFrame.activeController.timeToNextAttack = -1
+        CurveFrame.activeController.focusStart = 0
+        CurveFrame.activeController.hitboxMagnitude = 40
+        CurveFrame.activeController.humanoid.AutoRotate = true
+        CurveFrame.activeController.increment = 1 + 1 / 1
+       end)
+    end
+    end
+end)
+
+abc = true
+task.spawn(function()
+    local a = game.Players.LocalPlayer
+    local b = require(a.PlayerScripts.CombatFramework.Particle)
+    local c = require(game:GetService("ReplicatedStorage").CombatFramework.RigLib)
+    if not shared.orl then
+        shared.orl = c.wrapAttackAnimationAsync
+    end
+    if not shared.cpc then
+        shared.cpc = b.play
+    end
+    if abc then
+        pcall(function()
+            c.wrapAttackAnimationAsync = function(d, e, f, g, h)
+            local i = c.getBladeHits(e, f, g)
+            if i then
+                b.play = function()
+                end
+                d:Play(0.25, 0.25, 0.25)
+                h(i)
+                b.play = shared.cpc
+                wait(.5)
+                d:Stop()
+            end
+            end
+        end)
+    end
 end)
 
 Main:AddToggle("Auto Click",false,function(value)
@@ -4405,7 +4537,7 @@ end)
         _G.Auto_Bone = value
         StopTween(_G.Auto_Bone)
     end)
-
+local BonePos = CFrame.new(-9530.61035, -132.860657, 5763.13477)
     spawn(function()
         while wait() do 
             if _G.Auto_Bone and World3 then
@@ -4430,6 +4562,22 @@ end)
                             end
                         end
                     else
+                    if BypassTP then
+                    elseif (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - BonePos.Position).Magnitude > 1500 then
+                    BTP(BonePos)
+                else
+                    topos(BonePos)
+                end
+
+
+                if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - BonePos.Position).Magnitude > 2000 then
+                    BTP(BonePos)
+                    wait(3)
+                    elseif (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - BonePos.Position).Magnitude < 2000 then
+                    topos(BonePos)
+                    end
+
+                    StartMagnetBoneMon = false
                     topos(CFrame.new(-9466.72949, 171.162918, 6132.01514))
                         StartMagnetBoneMon = false
                         for i,v in pairs(game:GetService("ReplicatedStorage"):GetChildren()) do 
@@ -4487,7 +4635,7 @@ end)
         _G.AutoDoughtBoss = value
         StopTween(_G.AutoDoughtBoss)
     end)
-    
+local DoughtPos = CFrame.new(-2099.33154, 66.9970703, -12128.585, 0.997561574, 0, 0.0697919354, 0, 1, 0, -0.0697919354, 0, 0.997561574)
     spawn(function()
         while wait() do
             pcall(function()
@@ -4552,6 +4700,24 @@ end)
                                         end
                                     end
                                 else
+
+                    if BypassTP then
+                    elseif (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - DoughtPos.Position).Magnitude > 1500 then
+                    BTP(DoughtPos)
+                else
+                    topos(DoughtPos)
+                end
+
+
+                if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - DoughtPos.Position).Magnitude > 2000 then
+                    BTP(DoughtPos)
+                    wait(3)
+                    elseif (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - DoughtPos.Position).Magnitude < 2000 then
+                    topos(DoughtPos)
+                    end
+
+                    StartMagnetBoneMon = false
+
                                     topos(CFrame.new(-2091.911865234375, 70.00884246826172, -12142.8359375))
                                     MagnetDought = false
                                     if game:GetService("ReplicatedStorage"):FindFirstChild("Cookie Crafter [Lv. 2200]") then
@@ -8535,6 +8701,60 @@ end)
 
   RaceV4:AddSeperator("Complete Trials")
 
+  RaceV4:AddToggle("Trial Race V4 ( No Fish )",_G.AutoQuestRace,function(v)
+  _G.AutoQuestRace = v
+  StopTween(_G.AutoQuestRace)
+  end)
+spawn(function()
+    pcall(function()
+        while wait() do
+            if _G.AutoQuestRace then
+                if game:GetService("Players").LocalPlayer.Data.Race.Value == "Human" then
+                    for i,v in pairs(game.Workspace.Enemies:GetDescendants()) do
+                        if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 then
+                            pcall(function()
+                                repeat wait(.1)
+                                    v.Humanoid.Health = 0
+                                    v.HumanoidRootPart.CanCollide = false
+                                    sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", math.huge)
+                                until not _G.AutoQuestRace or not v.Parent or v.Humanoid.Health <= 0
+                            end)
+                        end
+                    end
+                elseif game:GetService("Players").LocalPlayer.Data.Race.Value == "Skypiea" then
+                for _,v in next, workspace:GetDescendants() do
+                     if v.Name == "FinishPart" then
+                  game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
+                     end
+                     end
+
+                elseif game:GetService("Players").LocalPlayer.Data.Race.Value == "Cyborg" then
+                Game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame =  CFrame.new(-20093.4961, 9954.93945, -125.194695, 0.627363682, 1.15070167e-08, 0.778726399, -8.20592732e-08, 1, 5.13325205e-08, -0.778726399, -9.61058788e-08, 0.627363682)
+                    
+                elseif game:GetService("Players").LocalPlayer.Data.Race.Value == "Ghoul" then
+                    for i,v in pairs(game.Workspace.Enemies:GetDescendants()) do
+                        if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 then
+                            pcall(function()
+                                repeat wait(.1)
+                                    v.Humanoid.Health = 0
+                                    v.HumanoidRootPart.CanCollide = false
+                                    sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", math.huge)
+                                until not _G.AutoQuestRace or not v.Parent or v.Humanoid.Health <= 0
+                            end)
+                        end
+                    end
+                elseif game:GetService("Players").LocalPlayer.Data.Race.Value == "Mink" then
+                    for _,v in next, workspace:GetDescendants() do
+                     if v.Name == "StartPoint" then
+                  game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
+                end
+               end
+                end
+            end
+        end
+    end)
+end)  
+
   RaceV4:AddToggle("Auto Complete Trial Fish",false,function(v)
     getgenv().AutoTrialFishV4 = v
 end)
@@ -8616,40 +8836,6 @@ spawn(function()
         end
     end)
 end)
-
-      RaceV4:AddToggle("Auto Complete Trial Ghoul/Human",nil,function(value)
-    _G.Complete_Ghoul = value
-    end) 
-
-spawn(function()
-    while wait() do
-        if _G.Complete_Ghoul then
-            for i,v in pairs(game.Workspace.Enemies:GetDescendants()) do
-                if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 then
-                    pcall(function()
-                        repeat wait(.1)
-                            v.Humanoid.Health = 0
-                            v.HumanoidRootPart.CanCollide = false
-                            sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", math.huge)
-                        until not _G.Complete_Ghoul  or not v.Parent or v.Humanoid.Health <= 0
-                    end)
-                end
-            end
-        end
-    end
-    end)
-
-        RaceV4:AddButton("Auto Complete Trial Mink",function(t)
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").Map.MinkTrial.Ceiling.CFrame * CFrame.new(0,-5,0)
-        end)
-
-RaceV4:AddButton("Auto Complete Trial Angel",function(t)
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.Workspace.Map.SkyTrial.Model.FinishPart.CFrame
-        end)
-
-        RaceV4:AddButton("Auto Complete Trial Cyborg",function(t)
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0,300,0)
-        end)
 
     end
            R:AddSeperator("Raid")
@@ -9013,6 +9199,20 @@ end)
             end)
         end
     end)
+
+P:AddToggle("Dame Aura",false,function(v)
+    _G.AccsF = v    
+end)
+
+spawn(function()
+    while wait() do
+        pcall(function()
+            if _G.AccsF then
+                Attack()
+            end
+        end)
+    end
+end)
 
     P:AddToggle("Aimbot Skill",false,function(value)
         _G.Aimbot_Skill = value
@@ -10528,68 +10728,60 @@ elseif type(Ability) == 'table' then
     
     Misc:AddSeperator("Graphic")
 
-    Misc:AddToggle("Super FPS Boost",false,function(value)
-         _G.SuperFPSboost = value
-    end)
-
-    spawn(function()
-        while wait() do
-       if _G.SuperFPSboost then
-        for i,v in pairs(game.Workspace.Map:GetDescendants()) do
-            if v.Name == "Tavern" or v.Name == "SmileFactory" or v.Name == "Tree" or v.Name == "Rocks" or v.Name == "PartHouse" or v.Name == "Hotel" or v.Name == "WallPiece" or v.Name == "MiddlePillars" or v.Name == "Cloud" or v.Name == "PluginGrass" or v.Name == "BigHouse" or v.Name == "SmallHouse" or v.Name == "Detail" then
-                v:Destroy()
+        Misc:AddButton("Boost Fps", function()
+            for i,v in pairs(game.Workspace.Map:GetDescendants()) do
+                if v.Name == "Tavern" or v.Name == "SmileFactory" or v.Name == "Tree" or v.Name == "Rocks" or v.Name == "PartHouse" or v.Name == "Hotel" or v.Name == "WallPiece" or v.Name == "MiddlePillars" or v.Name == "Cloud" or v.Name == "PluginGrass" or v.Name == "BigHouse" or v.Name == "SmallHouse" or v.Name == "Detail" then
+                    v:Destroy()
+                end
+            end 
+            for i,v in pairs(game.ReplicatedStorage.Unloaded:GetDescendants()) do
+                if v.Name == "Tavern" or v.Name == "SmileFactory" or v.Name == "Tree" or v.Name == "Rocks" or v.Name == "PartHouse" or v.Name == "Hotel" or v.Name == "WallPiece" or v.Name == "MiddlePillars" or v.Name == "Cloud" or v.Name == "PluginGrass" or v.Name == "BigHouse" or v.Name == "SmallHouse" or v.Name == "Detail" then
+                    v:Destroy()
+                end
             end
-        end 
-        for i,v in pairs(game.ReplicatedStorage.Unloaded:GetDescendants()) do
-            if v.Name == "Tavern" or v.Name == "SmileFactory" or v.Name == "Tree" or v.Name == "Rocks" or v.Name == "PartHouse" or v.Name == "Hotel" or v.Name == "WallPiece" or v.Name == "MiddlePillars" or v.Name == "Cloud" or v.Name == "PluginGrass" or v.Name == "BigHouse" or v.Name == "SmallHouse" or v.Name == "Detail" then
-                v:Destroy()
+            for i,v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+                if v:IsA("Accessory") or v.Name == "Pants" or v.Name == "Shirt" then
+                    v:Destroy()
+                end
             end
-        end
-        for i,v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
-            if v:IsA("Accessory") or v.Name == "Pants" or v.Name == "Shirt" then
-                v:Destroy()
+            local decalsyeeted = true -- Leaving this on makes games look shitty but the fps goes up by at least 20.
+            local g = game
+            local w = g.Workspace
+            local l = g.Lighting
+            local t = w.Terrain
+            t.WaterWaveSize = 0
+            t.WaterWaveSpeed = 0
+            t.WaterReflectance = 0
+            t.WaterTransparency = 0
+            l.GlobalShadows = false
+            l.FogEnd = 9e9
+            l.Brightness = 0
+            settings().Rendering.QualityLevel = "Level01"
+            for i, v in pairs(g:GetDescendants()) do
+                if v:IsA("Part") or v:IsA("Union") or v:IsA("CornerWedgePart") or v:IsA("TrussPart") then
+                    v.Material = "Plastic"
+                    v.Reflectance = 0
+                elseif v:IsA("Decal") or v:IsA("Texture") and decalsyeeted then
+                    v.Transparency = 1
+                elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+                    v.Lifetime = NumberRange.new(0)
+                elseif v:IsA("Explosion") then
+                    v.BlastPressure = 1
+                    v.BlastRadius = 1
+                elseif v:IsA("Fire") or v:IsA("SpotLight") or v:IsA("Smoke") or v:IsA("Sparkles") then
+                    v.Enabled = false
+                elseif v:IsA("MeshPart") then
+                    v.Material = "Plastic"
+                    v.Reflectance = 0
+                    v.TextureID = 10385902758728957
+                end
             end
-        end
-        local decalsyeeted = true -- Leaving this on makes games look shitty but the fps goes up by at least 20.
-        local g = game
-        local w = g.Workspace
-        local l = g.Lighting
-        local t = w.Terrain
-        t.WaterWaveSize = 0
-        t.WaterWaveSpeed = 0
-        t.WaterReflectance = 0
-        t.WaterTransparency = 0
-        l.GlobalShadows = false
-        l.FogEnd = 9e9
-        l.Brightness = 0
-        settings().Rendering.QualityLevel = "Level01"
-        for i, v in pairs(g:GetDescendants()) do
-            if v:IsA("Part") or v:IsA("Union") or v:IsA("CornerWedgePart") or v:IsA("TrussPart") then
-                v.Material = "Plastic"
-                v.Reflectance = 0
-            elseif v:IsA("Decal") or v:IsA("Texture") and decalsyeeted then
-                v.Transparency = 1
-            elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
-                v.Lifetime = NumberRange.new(0)
-            elseif v:IsA("Explosion") then
-                v.BlastPressure = 1
-                v.BlastRadius = 1
-            elseif v:IsA("Fire") or v:IsA("SpotLight") or v:IsA("Smoke") or v:IsA("Sparkles") then
-                v.Enabled = false
-            elseif v:IsA("MeshPart") then
-                v.Material = "Plastic"
-                v.Reflectance = 0
-                v.TextureID = 10385902758728957
+            for i, e in pairs(l:GetChildren()) do
+                if e:IsA("BlurEffect") or e:IsA("SunRaysEffect") or e:IsA("ColorCorrectionEffect") or e:IsA("BloomEffect") or e:IsA("DepthOfFieldEffect") then
+                    e.Enabled = false
+                end
             end
-        end
-        for i, e in pairs(l:GetChildren()) do
-            if e:IsA("BlurEffect") or e:IsA("SunRaysEffect") or e:IsA("ColorCorrectionEffect") or e:IsA("BloomEffect") or e:IsA("DepthOfFieldEffect") then
-                e.Enabled = false
-            end
-        end
-    end
-end
-end)
+            end)
 
     Misc:AddToggle("Remove Damage",function()
         for i,v in pairs(game.Workspace:GetDescendants()) do
