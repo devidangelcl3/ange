@@ -1,4 +1,4 @@
--- Test
+-- Fast New
 repeat wait() until game:IsLoaded()
 and game.Players.LocalPlayer
 and game.Players.LocalPlayer.Character
@@ -4242,11 +4242,11 @@ spawn(function()
 end)
     Main:AddToggle("Fast Attack ",true,function(value)
         _G.FastAttack = value
-    end)      
-    
-_G.FastAttack = true
-_G.Fast_Delay = 0.5
+    end)     
 
+_G.FastAttack = true 
+_G.Fast = true
+_G.Fast_Delay = 0.3
 local CurveFrame = debug.getupvalues(require(game:GetService("Players").LocalPlayer.PlayerScripts:WaitForChild("CombatFramework")))[2]
 local VirtualUser = game:GetService("VirtualUser")
 local RigControllerR = debug.getupvalues(require(game:GetService("Players").LocalPlayer.PlayerScripts.CombatFramework.RigController))[2]
