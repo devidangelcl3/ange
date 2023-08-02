@@ -4139,7 +4139,12 @@ end)
         end)
     end)
 
-    Main:AddSeperator("Setting Farm Elite")
+    Main:AddSeperator("Slider")
+
+PointStats = 1
+Main:AddSlider("Point",1,100,PointStats,nil,function(value)
+PointStats = value
+end)
 
     PosY = 20
     Main:AddSlider("Pos Y",0,50,20,function(value)
@@ -4244,8 +4249,8 @@ end)
         _G.FastAttack = value
     end)     
 
-FastAttack = true
-_G.Fast_Delay = -0.36
+_G.FastAttack = true
+_G.Fast_Delay = 0.5
 
 local CurveFrame = debug.getupvalues(require(game:GetService("Players").LocalPlayer.PlayerScripts:WaitForChild("CombatFramework")))[2]
 local VirtualUser = game:GetService("VirtualUser")
@@ -4379,7 +4384,7 @@ task.spawn(function()
        pcall(function()
         CurveFrame.activeController.timeToNextAttack = -1
         CurveFrame.activeController.focusStart = 0
-        CurveFrame.activeController.hitboxMagnitude = 70
+        CurveFrame.activeController.hitboxMagnitude = 40
         CurveFrame.activeController.humanoid.AutoRotate = true
         CurveFrame.activeController.increment = 1 + 1 / 1
        end)
@@ -11083,7 +11088,7 @@ spawn(function()
     end)
 
 
-       Ss:AddSeperator("Stats")
+        Ss:AddSeperator("Stats")
 
 spawn(function()
     while wait() do
@@ -11105,7 +11110,6 @@ spawn(function()
                 end
             end
         end
-
         Fruit:Set("Fruit : "..count)
         Chest:Set("Chest : "..count10)
         wait(5)
@@ -11126,6 +11130,52 @@ Fruit = Ss:AddLabel("Fruit")
         end
     end)
     
+local Melee = Ss:AddLabel("Melee : ")
+local Defense = Ss:AddLabel("Defense : ")
+local Sword = Ss:AddLabel("Sword : ")
+local Gun = Ss:AddLabel("Gun : ")
+local Fruit = Ss:AddLabel("Fruit : ")
+
+    spawn(function()
+        while wait() do
+            pcall(function()
+                Melee:Set("Melee : "..game.Players.localPlayer.Data.Stats.Melee.Level.Value)
+            end)
+        end
+    end)
+    
+    spawn(function()
+        while wait() do
+            pcall(function()
+                Defense:Set("Defense : "..game.Players.localPlayer.Data.Stats.Defense.Level.Value)
+            end)
+        end
+    end)
+    
+    spawn(function()
+        while wait() do
+            pcall(function()
+                Sword:Set("Sword : "..game.Players.localPlayer.Data.Stats.Sword.Level.Value)
+            end)
+        end
+    end)
+    
+    spawn(function()
+        while wait() do
+            pcall(function()
+                Gun:Set("Gun : "..game.Players.localPlayer.Data.Stats.Gun.Level.Value)
+            end)
+        end
+    end)
+    
+    spawn(function()
+        while wait() do
+            pcall(function()
+                Fruit:Set("Fruit : "..game.Players.localPlayer.Data.Stats["Demon Fruit"].Level.Value)
+            end)
+        end
+    end)
+       
 Ss:AddToggle("Auto Stats Kaitun",_G.Auto_Stats_Kaitun,function(value)
 _G.Auto_Stats_Kaitun = value
 end)
@@ -11179,6 +11229,53 @@ end)
 Ss:AddToggle("Devil Fruit",false,function(value)
 demonfruit = value
 end)
+
+spawn(function()
+        while wait() do
+            if game.Players.localPlayer.Data.Points.Value >= PointStats then
+                if melee then
+                    local args = {
+                        [1] = "AddPoint",
+                        [2] = "Melee",
+                        [3] = PointStats
+                    }
+                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(args))
+                end 
+                if defense then
+                    local args = {
+                        [1] = "AddPoint",
+                        [2] = "Defense",
+                        [3] = PointStats
+                    }
+                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(args))
+                end 
+                if sword then
+                    local args = {
+                        [1] = "AddPoint",
+                        [2] = "Sword",
+                        [3] = PointStats
+                    }
+                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(args))
+                end 
+                if gun then
+                    local args = {
+                        [1] = "AddPoint",
+                        [2] = "Gun",
+                        [3] = PointStats
+                    }
+                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(args))
+                end 
+                if demonfruit then
+                    local args = {
+                        [1] = "AddPoint",
+                        [2] = "Demon Fruit",
+                        [3] = PointStats
+                    }
+                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(args))
+                end
+            end
+        end
+    end)
     
     Ss:AddSeperator("Fake Mode")
     
