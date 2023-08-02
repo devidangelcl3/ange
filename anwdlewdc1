@@ -1,5 +1,4 @@
 -- Fast New
-
 repeat wait() until game:IsLoaded()
 and game.Players.LocalPlayer
 and game.Players.LocalPlayer.Character
@@ -3229,10 +3228,14 @@ function UpdateRealFruitChams()
     
     function TP1(Pos)
     Distance = (Pos.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
-    if Distance < 1000 then
-        Speed = 320
-    elseif Distance >= 1000 then
+    if Distance < 250 then
+        Speed = 600
+    elseif Distance < 500 then
         Speed = 300
+    elseif Distance < 750 then
+        Speed = 250
+    elseif Distance >= 1000 then
+        Speed = 200
     end
     game:GetService("TweenService"):Create(
         game.Players.LocalPlayer.Character.HumanoidRootPart,
@@ -3244,10 +3247,14 @@ end
         function topos(Pos)
         Distance = (Pos.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
         if Distance < 250 then
-                Speed = 700
-            elseif Distance >= 1000 then
-                Speed = 200
-            end
+            Speed = 600
+        elseif Distance < 500 then
+            Speed = 300
+        elseif Distance < 750 then
+            Speed = 250
+        elseif Distance >= 1000 then
+            Speed = 200
+        end
         game:GetService("TweenService"):Create(
             game:GetService("Players").LocalPlayer.Character.HumanoidRootPart,
             TweenInfo.new(Distance/Speed, Enum.EasingStyle.Linear),
@@ -4132,15 +4139,10 @@ end)
         end)
     end)
 
-    Main:AddSeperator("Slider")
+    Main:AddSeperator("Setting Farm Elite")
 
-PointStats = 1
-Main:AddSlider("Point",1,100,PointStats,nil,function(value)
-PointStats = value
-end)
-
-    PosY = 23
-    Main:AddSlider("Pos Y",0,50,23,function(value)
+    PosY = 20
+    Main:AddSlider("Pos Y",0,50,20,function(value)
     PosY = value
     end)
 
@@ -4242,9 +4244,9 @@ end)
         _G.FastAttack = value
     end)     
 
-_G.FastAttack = true 
-_G.Fast = true
-_G.Fast_Delay = 0.3
+FastAttack = true
+_G.Fast_Delay = -0.36
+
 local CurveFrame = debug.getupvalues(require(game:GetService("Players").LocalPlayer.PlayerScripts:WaitForChild("CombatFramework")))[2]
 local VirtualUser = game:GetService("VirtualUser")
 local RigControllerR = debug.getupvalues(require(game:GetService("Players").LocalPlayer.PlayerScripts.CombatFramework.RigController))[2]
@@ -4377,7 +4379,7 @@ task.spawn(function()
        pcall(function()
         CurveFrame.activeController.timeToNextAttack = -1
         CurveFrame.activeController.focusStart = 0
-        CurveFrame.activeController.hitboxMagnitude = 40
+        CurveFrame.activeController.hitboxMagnitude = 70
         CurveFrame.activeController.humanoid.AutoRotate = true
         CurveFrame.activeController.increment = 1 + 1 / 1
        end)
@@ -4543,7 +4545,6 @@ end)
 
     local BoneFarm = N:AddToggle("Auto Farm Bone",_G.Auto_Bone,function(value)
         _G.Auto_Bone = value
-        _G.AutoClick = value
         StopTween(_G.Auto_Bone)
     end)
 local BonePos = CFrame.new(-9530.61035, -132.860657, 5763.13477)
@@ -4604,7 +4605,7 @@ local BonePos = CFrame.new(-9530.61035, -132.860657, 5763.13477)
                 end)
             end
         end
-    end)   
+    end)    
 
     N:AddToggle("Auto Random Bone",_G.Auto_Random_Bone,function(value)
         _G.Auto_Random_Bone = value
@@ -4759,7 +4760,7 @@ local DoughtPos = CFrame.new(-2099.33154, 66.9970703, -12128.585, 0.997561574, 0
                 end)
             end
         end
-    end)   
+    end)    
     
     N:AddToggle("Auto Kill Dough King", _G.Autodoughking,function(value)
          _G.Autodoughking = value
@@ -7456,11 +7457,10 @@ M:AddToggle("Auto Kill Boss Tushita", _G.Autotushita,function(value)
 
     M:AddToggle("Auto Elite Hunter",_G.AutoElitehunter,function(value)
         _G.AutoElitehunter = value
-        _G.AutoClick = value
         game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("AbandonQuest")
         StopTween(_G.AutoElitehunter)
     end)
-
+    
     spawn(function()
         while wait() do
             if _G.AutoElitehunter and World3 then
@@ -8499,6 +8499,7 @@ spawn(function()
                     if game:GetService("Workspace").Map:FindFirstChild("MysticIsland") then
                         _G.Teleport_CenterMirage = game:GetService("Workspace").Map.MysticIsland.Center.Position
                         getgenv().ToTarget(CFrame.new(game:GetService("Workspace").Map.MysticIsland.Center.Position.X,395,game:GetService("Workspace").Map.MysticIsland.Center.Position.Z))
+
                         end
                     end
                 end
@@ -11065,7 +11066,7 @@ spawn(function()
     end)
 
 
-        Ss:AddSeperator("Stats")
+       Ss:AddSeperator("Stats")
 
 spawn(function()
     while wait() do
@@ -11087,6 +11088,7 @@ spawn(function()
                 end
             end
         end
+
         Fruit:Set("Fruit : "..count)
         Chest:Set("Chest : "..count10)
         wait(5)
@@ -11107,52 +11109,6 @@ Fruit = Ss:AddLabel("Fruit")
         end
     end)
     
-local Melee = Ss:AddLabel("Melee : ")
-local Defense = Ss:AddLabel("Defense : ")
-local Sword = Ss:AddLabel("Sword : ")
-local Gun = Ss:AddLabel("Gun : ")
-local Fruit = Ss:AddLabel("Fruit : ")
-
-    spawn(function()
-        while wait() do
-            pcall(function()
-                Melee:Set("Melee : "..game.Players.localPlayer.Data.Stats.Melee.Level.Value)
-            end)
-        end
-    end)
-    
-    spawn(function()
-        while wait() do
-            pcall(function()
-                Defense:Set("Defense : "..game.Players.localPlayer.Data.Stats.Defense.Level.Value)
-            end)
-        end
-    end)
-    
-    spawn(function()
-        while wait() do
-            pcall(function()
-                Sword:Set("Sword : "..game.Players.localPlayer.Data.Stats.Sword.Level.Value)
-            end)
-        end
-    end)
-    
-    spawn(function()
-        while wait() do
-            pcall(function()
-                Gun:Set("Gun : "..game.Players.localPlayer.Data.Stats.Gun.Level.Value)
-            end)
-        end
-    end)
-    
-    spawn(function()
-        while wait() do
-            pcall(function()
-                Fruit:Set("Fruit : "..game.Players.localPlayer.Data.Stats["Demon Fruit"].Level.Value)
-            end)
-        end
-    end)
-       
 Ss:AddToggle("Auto Stats Kaitun",_G.Auto_Stats_Kaitun,function(value)
 _G.Auto_Stats_Kaitun = value
 end)
@@ -11206,54 +11162,6 @@ end)
 Ss:AddToggle("Devil Fruit",false,function(value)
 demonfruit = value
 end)
-
-
-spawn(function()
-        while wait() do
-            if game.Players.localPlayer.Data.Points.Value >= PointStats then
-                if melee then
-                    local args = {
-                        [1] = "AddPoint",
-                        [2] = "Melee",
-                        [3] = PointStats
-                    }
-                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(args))
-                end 
-                if defense then
-                    local args = {
-                        [1] = "AddPoint",
-                        [2] = "Defense",
-                        [3] = PointStats
-                    }
-                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(args))
-                end 
-                if sword then
-                    local args = {
-                        [1] = "AddPoint",
-                        [2] = "Sword",
-                        [3] = PointStats
-                    }
-                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(args))
-                end 
-                if gun then
-                    local args = {
-                        [1] = "AddPoint",
-                        [2] = "Gun",
-                        [3] = PointStats
-                    }
-                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(args))
-                end 
-                if demonfruit then
-                    local args = {
-                        [1] = "AddPoint",
-                        [2] = "Demon Fruit",
-                        [3] = PointStats
-                    }
-                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(args))
-                end
-            end
-        end
-    end)
     
     Ss:AddSeperator("Fake Mode")
     
