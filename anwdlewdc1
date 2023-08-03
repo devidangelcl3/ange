@@ -4186,7 +4186,7 @@ spawn(function()
         if _G.BringMode then
             pcall(function()
                 if _G.BringMode == "Super" then
-                    _G.BringMode = 320
+                    _G.BringMode = 300
                 end
             end)
         end
