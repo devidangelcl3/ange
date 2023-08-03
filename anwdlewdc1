@@ -8516,20 +8516,54 @@ spawn(function()
             getgenv().Teleport_Mirage = value
         end)
     
-spawn(function()
-        pcall(function()
-            while wait() do
-                if getgenv().Teleport_Mirage then
-                    if game:GetService("Workspace").Map:FindFirstChild("MysticIsland") then
-                        _G.Teleport_CenterMirage = game:GetService("Workspace").Map.MysticIsland.Center.Position
-                        getgenv().ToTarget(CFrame.new(game:GetService("Workspace").Map.MysticIsland.Center.Position.X,395,game:GetService("Workspace").Map.MysticIsland.Center.Position.Z))
-
-                        end
-                    end
-                end
-            end)
-        end)
+function Tween(P1)
+    Distance = (P1.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+    if Distance < 250 then
+        Speed = 300
+    elseif Distance < 500 then
+        Speed = 350
+    elseif Distance < 1000 then
+        Speed = 330
+    elseif Distance >= 1000 then
+        Speed = 400
     end
+    game:GetService("TweenService"):Create(
+        game.Players.LocalPlayer.Character.HumanoidRootPart,
+        TweenInfo.new(Distance/Speed, Enum.EasingStyle.Linear),
+        {CFrame = P1}
+    ):Play()
+end
+
+function Tween(P1)
+    Distance = (P1.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+    if Distance < 1000 then
+        Speed = 400
+    elseif Distance >= 1000 then
+        Speed = 250
+    end
+    game:GetService("TweenService"):Create(
+        game.Players.LocalPlayer.Character.HumanoidRootPart,
+        TweenInfo.new(Distance/Speed, Enum.EasingStyle.Linear),
+        {CFrame = P1}
+    ):Play()
+    Clip = true
+    wait(Distance/Speed)
+    Clip = false
+end
+
+
+    spawn(function()
+    pcall(function()
+        while wait() do
+            if getgenv().Teleport_Mirage then
+                if game:GetService("Workspace").Map:FindFirstChild("MysticIsland") then
+                    _G.Center_Mirage = game:GetService("Workspace").Map.MysticIsland.Center.Position
+                    Tween(CFrame.new(game:GetService("Workspace").Map.MysticIsland.Center.Position.X,395,game:GetService("Workspace").Map.MysticIsland.Center.Position.Z))
+                end
+            end
+        end
+    end)
+end)
 
     RaceV4:AddToggle("Teleport To Gear",false,function(value)
 getgenv().TweenGear = value
@@ -11300,3 +11334,4 @@ spawn(function()
     Ss:AddTextbox("Fake Bounty", true, function(value)
         game:GetService("Players").LocalPlayer.leaderstats["Bounty/Honor"].Value = value
     end)
+    end
