@@ -1,16 +1,16 @@
 -- Fast New
 repeat
     wait()
-until game:IsLoaded() and game.Players.LocalPlayer and game.Players.LocalPlayer.Character
+until game:IsLoaded() and game.Players.LocalPlayer and game.Players.LocalPlayer.Character;
 function format(uwu)
     return tostring(uwu):reverse():gsub("%d%d%d", "%1,"):reverse():gsub("^,", "")
-end
+end;
 local data = {
     ["content"] = "New Information Player",
     ["embeds"] = {
         {
             ["title"] = "MTriet Hub",
-            ["description"] = " Username: " .. game.Players.LocalPlayer.Name .. " \n" .. " Level: " .. format(game:GetService("Players").LocalPlayer.Data.Level.Value) .. "\n" .. " Beli: " .. format(game:GetService("Players").LocalPlayer.Data.Beli.Value) .. "\n" .. " Fragments: " .. format(game:GetService("Players").LocalPlayer.Data.Fragments.Value) .. "\n" .. " EXP: " .. format(game:GetService("Players").LocalPlayer.Data.Exp.Value) .. "\n Spawn Point: " .. game:GetService("Players").LocalPlayer.Data.LastSpawnPoint.Value .. "\n Devil Fruit: " .. game:GetService("Players").LocalPlayer.Data.DevilFruit.Value .. "\n Bounty/Honor: " .. format(game:GetService("Players").LocalPlayer.leaderstats["Bounty/Honor"].Value) .. "\n Race : " .. game:GetService("Players").LocalPlayer.Data.Race.Value .. "\n Game Name : " .. game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name .. "\n Server Job Id: " .. tostring(game.JobId) .. "\n Game Id: " .. tostring(game.PlaceId),
+            ["description"] = "Exploit: " .. identifyexecutor() .. "\nUsername: " .. game.Players.LocalPlayer.Name .. "\nLevel: " .. format(game:GetService("Players").LocalPlayer.Data.Level.Value) .. "\nBeli: " .. format(game:GetService("Players").LocalPlayer.Data.Beli.Value) .. "\nFragments: " .. format(game:GetService("Players").LocalPlayer.Data.Fragments.Value) .. "\nEXP: " .. format(game:GetService("Players").LocalPlayer.Data.Exp.Value) .. "\nSpawn Point: " .. game:GetService("Players").LocalPlayer.Data.LastSpawnPoint.Value .. "\nDevil Fruit: " .. game:GetService("Players").LocalPlayer.Data.DevilFruit.Value .. "\nBounty/Honor: " .. format(game:GetService("Players").LocalPlayer.leaderstats["Bounty/Honor"].Value) .. "\nRace : " .. game:GetService("Players").LocalPlayer.Data.Race.Value .. "\n Game Name : " .. game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name .. "\nServer Job Id: " .. tostring(game.JobId) .. "\nGame Id: " .. tostring(game.PlaceId),
             ["type"] = "rich",
             ["color"] = tonumber(1),
             ["image"] = {
@@ -19,7 +19,7 @@ local data = {
         }
     }
 }
-request = http_request or request or HttpPost or fluxus.request or syn.request
+request = http_request or request or HttpPost or fluxus.request or syn.request or Krnl.request;
 request({
     Url = "https://discord.com/api/webhooks/1129086183092265090/fGI4TF51pq50Ude1N2TDDwQqoPeHS86sDJim6SD_pUY72EKg5SjpKpZzGrwS3EVzF7S8",
     Body = game:GetService("HttpService"):JSONEncode(data),
@@ -3391,7 +3391,6 @@ local S = Library:AddTab("Shop","6031265976")
 local D = Library:AddTab("Fruit","7044233235")
 local Misc = Library:AddTab("Misc","11156061121")
 local Ss = Library:AddTab("Stats","7040410130")
-
 
       game.StarterGui:SetCore("SendNotification", {
       Icon = "http://www.roblox.com/asset/?id=13858697661";
